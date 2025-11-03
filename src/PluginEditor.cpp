@@ -8,6 +8,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     , delayTimeLabel("Time Label", "Time")
     , delayFeedbackLabel("Feedback Label","Feedback")
     , delayMixLabel("Mix Label", "Mix")
+    , delayTimeAttachment(processorRef.getAPVTS(),"Time",delayTimeSlider)
+    , delayFeedbackAttachment(processorRef.getAPVTS(),"Feedback",delayFeedbackSlider)
+    , delayMixAttachment(processorRef.getAPVTS(),"Mix",delayMixSlider)
 {
     juce::ignoreUnused (processorRef);
     // Make sure that before the constructor has finished, you've set the
@@ -17,7 +20,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(delayTimeSlider);
     delayTimeSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     delayTimeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,false,100,25);
-    delayTimeSlider.setTextValueSuffix("s");    
+
+    delayTimeSlider.textFromValueFunction = nullptr;
+    delayTimeSlider.setNumDecimalPlacesToDisplay(2); 
+    delayTimeSlider.setTextValueSuffix("s");   
+
 
     addAndMakeVisible(delayTimeLabel);
     delayTimeLabel.setJustificationType(juce::Justification::centred);
@@ -26,6 +33,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(delayFeedbackSlider);
     delayFeedbackSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     delayFeedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,false,100,25);
+
+    delayFeedbackSlider.textFromValueFunction = nullptr;
+    delayFeedbackSlider.setNumDecimalPlacesToDisplay(0); 
     delayFeedbackSlider.setTextValueSuffix("%");
 
     addAndMakeVisible(delayFeedbackLabel);
@@ -34,7 +44,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(delayMixSlider);
     delayMixSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag);
     delayMixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,false,100,25);
-    delayFeedbackSlider.setTextValueSuffix("%");
+    
+    delayMixSlider.textFromValueFunction = nullptr;
+    delayMixSlider.setNumDecimalPlacesToDisplay(0); 
+    delayMixSlider.setTextValueSuffix("%");
 
     addAndMakeVisible(delayMixLabel);
     delayMixLabel.setJustificationType(juce::Justification::centred);

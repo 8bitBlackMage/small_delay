@@ -1,25 +1,40 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-// Value Tree IDs 
-
-     const juce::Identifier AudioPluginAudioProcessor::delayFeedbackID("Feedback");
-     const juce::Identifier AudioPluginAudioProcessor::delayTimeID("Time");
-     const juce::Identifier AudioPluginAudioProcessor::delayMixID("Mix");
 
 
-//==============================================================================
-AudioPluginAudioProcessor::AudioPluginAudioProcessor()
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-{
-}
+    juce::AudioProcessorValueTreeState::ParameterLayout  AudioPluginAudioProcessor::createParameterLayout()
+    {
+        juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+        layout.add( std::make_unique<juce::AudioParameterFloat>(
+                        "Time",
+                        "Time",
+                        juce::NormalisableRange<float>(0.0f,8.0f),
+                        1.0f));
+
+        layout.add(std::make_unique<juce::AudioParameterFloat>(
+                        "Feedback",
+                        "Feedback",
+                        juce::NormalisableRange<float>(0.0f,100.0f),
+                        50.0f));
+        
+        layout.add(std::make_unique<juce::AudioParameterFloat>(
+                        "Mix",
+                        "Mix",
+                        juce::NormalisableRange<float>(0.0f,100.0f),
+                        50.0f));
+
+                        
+        return layout;
+    }
+
+     //==============================================================================
+     AudioPluginAudioProcessor::AudioPluginAudioProcessor()
+         : AudioProcessor()
+         , apvts(*this,nullptr,"Params", AudioPluginAudioProcessor::createParameterLayout())
+     {
+     }
 
 AudioPluginAudioProcessor::~AudioPluginAudioProcessor()
 {
@@ -177,14 +192,18 @@ void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    const juce::ValueTree copiedState  = apvts.copyState();
+    juce::MemoryOutputStream  stream;
+    copiedState.writeToStream(stream);
+
+    destData.append(stream.getData(),stream.getDataSize());
 }
 
 void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    juce::ValueTree state = juce::ValueTree::readFromData(data, static_cast<size_t>(sizeInBytes));
+    apvts.replaceState(state);
+
 }
 
 //==============================================================================

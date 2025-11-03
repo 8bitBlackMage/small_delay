@@ -12,6 +12,8 @@ juce_add_plugin(${PROJECT_NAME}
     FORMATS Standalone AU VST3
     PRODUCT_NAME "small delay"
 
+    COMPANY_NAME 8BitBlackmage
+
     COPY_PLUGIN_AFTER_BUILD TRUE)
 
 target_sources( 
@@ -46,7 +48,8 @@ target_link_libraries(
     tests
     PRIVATE 
     Catch2::Catch2WithMain
-    juce::juce_audio_utils)
+    juce::juce_audio_utils
+    juce::juce_data_structures)
 
 include(CTest)
 include(Catch)

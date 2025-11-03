@@ -1,21 +1,16 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_data_structures/juce_data_structures.h>
+
 #include "dsp/DelayUnit.h"
-
-
-
-
-
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
 {
 public:
-    // ValueTree IDs
-    static const juce::Identifier delayFeedbackID;
-    static const juce::Identifier delayTimeID;
-    static const juce::Identifier delayMixID;
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 
     //==============================================================================
@@ -54,9 +49,11 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+
+    juce::AudioProcessorValueTreeState & getAPVTS() {return apvts;}
 private:
     //==============================================================================
-
+    juce::AudioProcessorValueTreeState apvts;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
